@@ -1,7 +1,7 @@
-# Student-Dropout-Predicter
+# Student-Dropout-Predictor
 An ML-based analytics solution to identify students at risk of dropping out. It analyzes academic  and socioeconomic factors to enable early institutional intervention.
 
-# Student Dropout Predicter
+# Student Dropout Predictor
 
 A machine learning web application that predicts whether a student is at risk of dropping out.
 
