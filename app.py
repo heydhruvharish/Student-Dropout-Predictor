@@ -145,3 +145,7 @@ def predict():
 if __name__ == "__main__":
     train_model()
     app.run(debug=True)
+
+if __name__ == "__main__":
+    train_model()
+    app.run(host="0.0.0.0", port=10000)
