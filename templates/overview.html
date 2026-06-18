@@ -1,0 +1,203 @@
+
+<h2 class="sr-only">Student dropout prediction ML project dashboard showing dataset overview, model comparison, and final model metrics</h2>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.section { margin-bottom: 2rem; }
+.section-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-tertiary); margin-bottom: 12px; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+.metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+.chart-wrap { position: relative; width: 100%; }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: var(--border-radius-md); }
+.tag-success { background: var(--color-background-success); color: var(--color-text-success); }
+.tag-info { background: var(--color-background-info); color: var(--color-text-info); }
+.tag-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+.legend-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font-size: 12px; color: var(--color-text-secondary); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.cm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
+.cm-cell { padding: 14px; text-align: center; }
+.cm-val { font-size: 20px; font-weight: 500; }
+.cm-desc { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.pipeline-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.pipe-step { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; text-align: center; }
+.pipe-step i { font-size: 18px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; }
+.pipe-step .ps-label { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.pipe-step .ps-sub { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+.pipe-arrow { display: flex; align-items: center; justify-content: center; color: var(--color-text-tertiary); font-size: 14px; }
+.features-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.feat-pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); background: var(--color-background-primary); }
+.winner-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.winner-card { background: var(--color-background-primary); border: 2px solid var(--color-border-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.winner-badge { font-size: 11px; font-weight: 500; background: var(--color-background-info); color: var(--color-text-info); padding: 3px 10px; border-radius: var(--border-radius-md); display: inline-block; margin-bottom: 10px; }
+.winner-name { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.winner-sub { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 14px; }
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.stat-lbl { font-size: 11px; color: var(--color-text-tertiary); }
+.stat-val { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.rationale-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; border-left: 3px solid #378ADD; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.rationale-card p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+</style>
+
+<div style="padding: 1rem 0;">
+
+  <div class="section">
+    <div class="section-title">Dataset overview</div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-users" aria-hidden="true"></i> Total students</div>
+        <div class="metric-value">10,000</div>
+        <div class="metric-sub">after imputation</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-table" aria-hidden="true"></i> Features used</div>
+        <div class="metric-value">12</div>
+        <div class="metric-sub">after encoding & drop</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-trending-down" aria-hidden="true"></i> Dropout rate</div>
+        <div class="metric-value">23.5%</div>
+        <div class="metric-sub">2,354 students</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label"><i class="ti ti-check" aria-hidden="true"></i> Retained</div>
+        <div class="metric-value">76.5%</div>
+        <div class="metric-sub">7,646 students</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Preprocessing pipeline</div>
+    <div style="display: grid; grid-template-columns: 1fr 16px 1fr 16px 1fr 16px 1fr 16px 1fr; gap: 6px; align-items: center;">
+      <div class="pipe-step"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i><div class="ps-label">Raw CSV</div><div class="ps-sub">19 columns</div></div>
+      <div class="pipe-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      <div class="pipe-step"><i class="ti ti-sparkles" aria-hidden="true"></i><div class="ps-label">Imputation</div><div class="ps-sub">Mean / mode</div></div>
+      <div class="pipe-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      <div class="pipe-step"><i class="ti ti-code" aria-hidden="true"></i><div class="ps-label">Encoding</div><div class="ps-sub">OHE + Ordinal</div></div>
+      <div class="pipe-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      <div class="pipe-step"><i class="ti ti-scale" aria-hidden="true"></i><div class="ps-label">Scaling</div><div class="ps-sub">StandardScaler</div></div>
+      <div class="pipe-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      <div class="pipe-step"><i class="ti ti-brain" aria-hidden="true"></i><div class="ps-label">Train / test</div><div class="ps-sub">80 / 20 split</div></div>
+    </div>
+    <div style="margin-top: 12px;">
+      <div class="features-wrap">
+        <span class="feat-pill">Family income</span>
+        <span class="feat-pill">Study hours/day</span>
+        <span class="feat-pill">Attendance rate</span>
+        <span class="feat-pill">Assignment delay</span>
+        <span class="feat-pill">Travel time</span>
+        <span class="feat-pill">Scholarship</span>
+        <span class="feat-pill">Stress index</span>
+        <span class="feat-pill">CGPA</span>
+        <span class="feat-pill">Parental education</span>
+        <span class="feat-pill">Gender</span>
+        <span class="feat-pill">Internet access</span>
+        <span class="feat-pill">Part-time job</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Model comparison — recall score (primary metric)</div>
+    <div class="legend-row">
+      <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#378ADD"></span>Recall %</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#639922"></span>Accuracy %</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#D4537E"></span>Precision %</span>
+    </div>
+    <div class="chart-wrap" style="height: 420px;">
+      <canvas id="modelChart" role="img" aria-label="Grouped bar chart comparing 10 classifiers across recall, accuracy, and precision. Logistic Regression leads on recall at 77%.">Logistic Regression: recall 77.07, accuracy 71.8, precision 44.32. Naive Bayes: recall 49.04, accuracy 80.6, precision 60.95. KNN: recall 34.39, accuracy 76.1, precision 48.94. Decision Tree: recall 42.46, accuracy 71.45, precision 40. SVC: recall 43.1, accuracy 74.45, precision 45.52. AdaBoost: recall 75.37, accuracy 73.3, precision 45.92. Gradient Boost: recall 36.31, accuracy 80.25, precision 64.29. XGBoost: recall 38.85, accuracy 79.35, precision 59.42. Voting: recall 77.07, accuracy 71.8, precision 44.32. Stacking: recall 74.52, accuracy 73.15, precision 45.70.</canvas>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Final model — logistic regression</div>
+    <div class="winner-row">
+      <div class="winner-card">
+        <div class="winner-badge">Selected model</div>
+        <div class="winner-name">Logistic Regression</div>
+        <div class="winner-sub">L1 penalty · C=0.01 · balanced weights · liblinear solver</div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-lbl">Recall</div><div class="stat-val" style="color:#378ADD">77.1%</div></div>
+          <div class="stat-box"><div class="stat-lbl">Accuracy</div><div class="stat-val">71.8%</div></div>
+          <div class="stat-box"><div class="stat-lbl">F1 score</div><div class="stat-val">56.3%</div></div>
+          <div class="stat-box"><div class="stat-lbl">Precision</div><div class="stat-val">44.3%</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title" style="margin-bottom:8px;">Confusion matrix (test set — 2,000 samples)</div>
+        <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:0;align-items:center;font-size:11px;color:var(--color-text-tertiary);">
+          <div style="padding-right:8px;"></div>
+          <div style="text-align:center;padding-bottom:4px;">Predicted: no dropout</div>
+          <div style="text-align:center;padding-bottom:4px;">Predicted: dropout</div>
+          <div style="padding-right:8px;writing-mode:horizontal-tb;text-align:right;">Actual: no dropout</div>
+          <div style="background:#E6F1FB;border-radius:6px 0 0 0;border:0.5px solid var(--color-border-tertiary);padding:14px;text-align:center;">
+            <div style="font-size:20px;font-weight:500;color:#0C447C">1,073</div>
+            <div style="font-size:10px;color:#185FA5;margin-top:2px;">True negative</div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:0 6px 0 0;border:0.5px solid var(--color-border-tertiary);padding:14px;text-align:center;">
+            <div style="font-size:20px;font-weight:500;color:var(--color-text-primary)">456</div>
+            <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px;">False positive</div>
+          </div>
+          <div style="padding-right:8px;writing-mode:horizontal-tb;text-align:right;">Actual: dropout</div>
+          <div style="background:var(--color-background-secondary);border-radius:0 0 0 6px;border:0.5px solid var(--color-border-tertiary);padding:14px;text-align:center;">
+            <div style="font-size:20px;font-weight:500;color:var(--color-text-primary)">108</div>
+            <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px;">False negative ↓ minimized</div>
+          </div>
+          <div style="background:#EAF3DE;border-radius:0 0 6px 0;border:0.5px solid var(--color-border-tertiary);padding:14px;text-align:center;">
+            <div style="font-size:20px;font-weight:500;color:#3B6D11">363</div>
+            <div style="font-size:10px;color:#639922;margin-top:2px;">True positive</div>
+          </div>
+        </div>
+        <div class="rationale-card" style="margin-top:10px;">
+          <p><strong style="font-weight:500;color:var(--color-text-primary)">Why recall?</strong> We want to catch every student at risk of dropping out. Missing a real dropout (false negative) is more costly than a false alarm — so recall is the primary metric and this model minimizes false negatives to just 108.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const models = ['Logistic\nRegression','Naive\nBayes','KNN','Decision\nTree','SVC','AdaBoost','Gradient\nBoost','XGBoost','Voting','Stacking'];
+const recall =    [77.07, 49.04, 34.39, 42.46, 43.10, 75.37, 36.31, 38.85, 77.07, 74.52];
+const accuracy =  [71.80, 80.60, 76.10, 71.45, 74.45, 73.30, 80.25, 79.35, 71.80, 73.15];
+const precision = [44.32, 60.95, 48.94, 40.00, 45.52, 45.92, 64.29, 59.42, 44.32, 45.70];
+
+new Chart(document.getElementById('modelChart'), {
+  type: 'bar',
+  data: {
+    labels: models,
+    datasets: [
+      { label: 'Recall', data: recall, backgroundColor: '#378ADD', borderWidth: 0 },
+      { label: 'Accuracy', data: accuracy, backgroundColor: '#639922', borderWidth: 0 },
+      { label: 'Precision', data: precision, backgroundColor: '#D4537E', borderWidth: 0 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%' } },
+      annotation: {}
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11 }, color: '#888', maxRotation: 0, autoSkip: false }
+      },
+      y: {
+        min: 0, max: 100,
+        ticks: { callback: v => v + '%', font: { size: 11 }, color: '#888' },
+        grid: { color: 'rgba(128,128,128,0.1)' }
+      }
+    }
+  }
+});
+</script>
